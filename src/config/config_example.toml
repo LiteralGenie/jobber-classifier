@@ -1,4 +1,4 @@
-host = '127.0.0.1'
-port = 9593
-
 model_file = '/path/to/mistral-7b-instruct-v0.2.Q8_0.gguf'
+
+# llama-cpp-python needs to be built from scratch for gpu-support to work (see requirements.txt)
+use_gpu = false
