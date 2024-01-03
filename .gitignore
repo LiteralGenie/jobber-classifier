@@ -2,3 +2,4 @@ src/data/models
 venv/
 
 *.pyc
+src/config/config.toml

@@ -1,4 +1,7 @@
+fastapi
 guidance
+tomli
+uvicorn
 
 # for GPU support, need to run
 # CMAKE_ARGS="-DLLAMA_CUBLAS=on" FORCE_CMAKE=1 pip install --force-reinstall --upgrade --no-cache-dir llama-cpp-python
