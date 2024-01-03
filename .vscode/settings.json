@@ -1,0 +1,15 @@
+{
+    "[python]": {
+      "editor.wordBasedSuggestions": false,
+      "editor.defaultFormatter": "ms-python.black-formatter",
+      "editor.formatOnSave": true,
+      "editor.codeActionsOnSave": {
+        "source.organizeImports": true,
+        "source.fixAll": true,
+      },
+    },
+    "python.analysis.typeCheckingMode": "basic",
+    "python.analysis.autoImportCompletions": true,
+    "python.analysis.fixAll": ["source.convertImportFormat", "source.unusedImports"],
+  }
+  

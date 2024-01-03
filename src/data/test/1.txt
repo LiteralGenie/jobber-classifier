@@ -1,0 +1,54 @@
+Job Title: JavaScript Programmer for Video Surveillance System
+
+
+Department: Engineering
+
+Position: Exempt, Full-Time
+
+Job Location: United States
+
+Job Summary
+
+IPConfigure is looking to hire a strong JavaScript / Front-End Engineer, creating customer-facing widgets working in our browser-based video management system. The JavaScript developer must have strong experience in JavaScript, HTML, and CSS. This is an awesome opportunity to work in leading edge technologies in the IP video surveillance market. The ideal candidate will work at our Norfolk, VA office.
+
+Duties/Responsibilities
+
+    Participate in a well-defined Agile software development process with other senior developers.
+    Develop high quality, well-designed application code for features and system components.
+    Participate in feature design, ensuring a balance between business and technology requirements.
+    Deliver code as scheduled that adheres to the design.
+    Find root causes of defects in features.
+    Adhere to coding practices designed to promote code reuse and standardization.
+    Provide time and resource estimates for own feature areas.
+    Identify risks and mitigation strategies.
+
+Requirements
+
+    Expertise in JavaScript, HTML, CSS.
+    Familiarity with: JavaScript framework such as AngularJS, React, etc., CSS3, and HTML5.
+    Object Oriented design background.
+    Web service programming (SOA, SOAP, REST.)
+    An active concern for quality engineering, with experience building scalable web applications.
+
+Any of the following would be a plus:
+
+    Video codecs, MJPEG, MPEG-4 Part 2, H.264.
+    Multimedia streaming (RTSP, progressive download).
+    Network programming (TCP, UDP, Unicast, Multicast).
+    Code samples and portfolio of designs.
+    Contributions to open source projects (for example a github page)
+
+Education and Experience
+
+    Bachelor’s Degree in Computer Science, Engineering, or related discipline.
+    5+ years experience developing long-lived, enterprise JavaScript applications.
+
+Benefits
+
+    Industry competitive salaries based on experience.
+    Generous PTO and Work From Home Policy.
+    Health, Vision, Dental, and Life insurance policies.
+    Flexible Spending Account and Health Saving Account.
+    401K with company match.
+
+IPConfigure, Inc. provides equal employment opportunities to all qualified persons and administers all aspects and conditions of employment without regard to race, religion, color, sex, gender, sexual orientation, pregnancy, age, national origin, ancestry, physical or mental disability, severe/morbid obesity, medical condition, military or veteran status, genetic information, marital status, ethnicity, alienage or any other protected classification, in accordance with applicable federal, state, and local laws.
