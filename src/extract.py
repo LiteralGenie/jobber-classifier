@@ -1,11 +1,10 @@
-from typing import TypedDict
+from typing import TypedDict, TypeVar
 
 from guidance import models
 
-from parsers.clearance_parser import ClearanceParser
-from parsers.duty_parser import DutyParser
-from parsers.salary_parser import SalaryParser
-from parsers.skill_parser import SkillParser
+from parsers.parser import Parser
+
+T = TypeVar("T")
 
 
 class JobData(TypedDict):
@@ -15,31 +14,27 @@ class JobData(TypedDict):
     clearance: bool
 
 
-def extract(
-    llm: models.Model,
-    description: str,
-    skills: list[str],
-    duties: list[str],
-) -> JobData:
-    parsers = dict(
-        skills=SkillParser(skills),
-        duties=DutyParser(duties),
-        salary=SalaryParser(),
-        clearance=ClearanceParser(),
-    )
-
-    prompt = f"""
-Given the job description below, answer the questions that follow it.
-
-Description:
-{description}
-""".strip()
-
-    for p in parsers.values():
-        prompt += f"\n\n{p.create_prompt()}"
+def extract(llm: models.Model, description: str, parser: Parser[T]) -> T:
+    prompt = "A job description is listed below. Answer the question that follows it."
+    prompt += "\n\n" + f"Job Description:\n{description}"
+    prompt += "\n\n" + parser.create_prompt()
 
     output = llm + prompt
+    answer = parser.extract_answer(output)
+    return answer
 
-    answers: JobData = {name: p.extract_answer(output) for name, p in parsers.items()}  # type: ignore
 
-    return answers
+# def extract(
+#     llm: models.Model,
+#     description: str,
+#     skills: list[str],
+#     duties: list[str],
+# ) -> JobData:
+#     get = lambda parser: _extract(llm, description, parser)
+
+#     return JobData(
+#         skills={sk: get(SkillParser(sk)) for sk in skills},  # type: ignore
+#         duties={d: get(DutyParser(d)) for d in duties},  # type: ignore
+#         salary=get(SalaryParser()),
+#         clearance=get(ClearanceParser()),
+#     )

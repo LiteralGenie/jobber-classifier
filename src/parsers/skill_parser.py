@@ -4,17 +4,14 @@ from guidance.models import Model
 from .parser import Parser
 
 
-class SkillParser(Parser[list[str]]):
-    def __init__(self, skills: list[str]):
-        self.skills = skills
+class SkillParser(Parser[bool]):
+    def __init__(self, skill: str):
+        self.skill = skill
 
     def create_prompt(self):
-        prompt = "Which technologies are part of the job responsibilities / duties? For each technology, answer with a yes or no."
-
-        for sk in self.skills:
-            prompt += f"\n{sk}: " + select(["yes", "no"], name=sk)
-
+        prompt = f"Is working with {self.skill} part of this job's responsibilities / duties? Ignore the requirements section. Answer with a yes or no."
+        prompt += "\nAnswer: " + select(["yes", "no"], name=self.skill)
         return prompt
 
-    def extract_answer(self, output: Model) -> list[str]:
-        return [sk for sk in self.skills if output[sk] == "yes"]
+    def extract_answer(self, output: Model) -> bool:
+        return output[self.skill] == "yes"

@@ -1,4 +1,37 @@
+# the containing folder (/path/to/) should already exist
+# the same db file should be configured for the other repos (jobber-classifier and jobber-site)
+db_file = '/path/to/db.sqlite'
+
 model_file = '/path/to/mistral-7b-instruct-v0.2.Q8_0.gguf'
 
 # llama-cpp-python needs to be built from scratch for gpu-support to work (see requirements.txt)
 use_gpu = false
+
+skills = [
+    'Python',
+    'C++',
+    'Git',
+    'VBA',
+    'Node.js',
+    'React',
+    'Angular',
+    'AngularJS',
+    'Java',
+    'VueJS',
+    'C',
+    'Ruby',
+    'Rust',
+    'golang',
+    'SQL',
+    'PERL',
+    'Bash',
+    'JavaScript',
+    'TypeScript',
+    'PHP',
+    'HTML',
+    'CSS',
+]
+
+[[duties]]
+name = 'On-call'
+prompt = 'Does the position involve a support / on-call rotation?'

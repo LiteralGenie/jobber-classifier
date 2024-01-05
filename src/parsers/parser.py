@@ -6,7 +6,7 @@ from guidance.models import Model
 T = TypeVar("T")
 
 
-class Parser(ABC, Generic[T]):
+class Parser(Generic[T], ABC):
     @abstractmethod
     def create_prompt(self) -> Any:
         ...
