@@ -63,10 +63,12 @@ def init_db(fp: str) -> sqlite3.Connection:
     db.execute(
         """
         CREATE TABLE IF NOT EXISTS indeed_misc_labels (
-            id_post     TEXT        NOT NULL,
+            id_post         TEXT        NOT NULL,
 
-            salary      REAL        NOT NULL,
-            clearance   BOOLEAN     NOT NULL,
+            is_hybrid       BOOLEAN     NOT NULL,
+            is_remote       BOOLEAN     NOT NULL,
+            salary          REAL        NOT NULL,
+            clearance       BOOLEAN     NOT NULL,
 
             PRIMARY KEY (id_post),
             FOREIGN KEY (id_post) REFERENCES indeed_posts(id)

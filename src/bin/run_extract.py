@@ -12,6 +12,7 @@ from db import init_db, update_db_duties, update_db_skills
 from extract import extract
 from parsers.clearance_parser import ClearanceParser
 from parsers.duty_parser import DutyParser
+from parsers.location_parser import HybridParser, RemoteParser
 from parsers.salary_parser import SalaryParser
 from parsers.skill_parser import SkillParser
 
@@ -48,7 +49,11 @@ for skill in skills:
 
     for post in missing:
         print(f"Checking for [{skill['name']}] in [{post['title']}]")
-        label = int(extract(llm, post["text"], SkillParser(skill["name"])))
+        try:
+            label = int(extract(llm, post["text"], SkillParser(skill["name"])))
+        except:
+            continue
+
         db.execute(
             """
             INSERT INTO indeed_skill_labels 
@@ -77,7 +82,10 @@ for dt in duties:
 
     for post in missing:
         print(f"Checking for [{dt['name']}] in [{post['title']}]")
-        label = int(extract(llm, post["text"], DutyParser(dt["prompt"])))
+        try:
+            label = int(extract(llm, post["text"], DutyParser(dt["prompt"])))
+        except:
+            continue
         db.execute(
             """
             INSERT INTO indeed_duty_labels 
@@ -87,6 +95,7 @@ for dt in duties:
             [post["id"], dt["id"], label],
         )
         db.commit()
+
 
 # Label salary and clearance
 missing = db.execute(
@@ -99,16 +108,21 @@ missing = db.execute(
 ).fetchall()
 
 for post in missing:
-    salary = extract(llm, post["text"], SalaryParser())
-    clearance = extract(llm, post["text"], ClearanceParser())
+    try:
+        salary = extract(llm, post["text"], SalaryParser())
+        clearance = extract(llm, post["text"], ClearanceParser())
+        is_hybrid = extract(llm, post["text"], HybridParser())
+        is_remote = extract(llm, post["text"], RemoteParser())
+    except:
+        continue
 
     print(f"Checking for misc labels in [{post['title']}]")
     db.execute(
         """
         INSERT INTO indeed_misc_labels 
-        (id_post, salary, clearance) VALUES
-        (?, ?, ?)
+        (id_post, salary, clearance, is_hybrid, is_remote) VALUES
+        (?, ?, ?, ?, ?)
         """,
-        [post["id"], salary, clearance],
+        [post["id"], salary, clearance, is_hybrid, is_remote],
     )
     db.commit()

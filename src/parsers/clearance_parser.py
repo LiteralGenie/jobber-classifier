@@ -10,7 +10,7 @@ class ClearanceParser(Parser[bool]):
             "Is a security clearance required for this job? Answer with a yes or no."
         )
 
-        prompt += "\nClearance: " + select(["yes", "no"])  # type: ignore
+        prompt += "\nClearance: " + select(["yes", "no"], name="clearance")  # type: ignore
 
         return prompt
 
