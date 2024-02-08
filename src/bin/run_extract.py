@@ -13,7 +13,7 @@ from db import init_db, update_db_duties, update_db_skills
 from extract import extract_llm, extract_regex
 from parsers.clearance_parser import ClearanceParser
 from parsers.duty_parser import DutyParser
-from parsers.location_parser import HybridParser, RemoteParser
+from parsers.location_parser import HybridParser, OnsiteParser, RemoteParser
 from parsers.salary_parser import SalaryParser
 
 with open(paths.CONFIG_DIR / "config.toml", "rb") as file:
@@ -105,16 +105,18 @@ missing = db.execute(
 for post in missing:
     salary = extract_llm(llm, post["text"], SalaryParser())
     clearance = extract_llm(llm, post["text"], ClearanceParser())
+    
     is_hybrid = extract_llm(llm, post["text"], HybridParser())
+    is_onsite = extract_llm(llm, post["text"], OnsiteParser())
     is_remote = extract_llm(llm, post["text"], RemoteParser())
 
     print(f"Checking for misc labels in [{post['title']}]")
     db.execute(
         """
         INSERT INTO indeed_misc_labels 
-        (id_post, salary, clearance, is_hybrid, is_remote) VALUES
-        (?, ?, ?, ?, ?)
+        (id_post, salary, clearance, is_hybrid, is_onsite, is_remote) VALUES
+        (?, ?, ?, ?, ?, ?)
         """,
-        [post["id"], salary, clearance, is_hybrid, is_remote],
+        [post["id"], salary, clearance, is_hybrid, is_onsite, is_remote],
     )
     db.commit()

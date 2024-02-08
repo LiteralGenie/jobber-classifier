@@ -67,6 +67,7 @@ def init_db(fp: str) -> sqlite3.Connection:
             id_post         TEXT        NOT NULL,
 
             is_hybrid       BOOLEAN     NOT NULL,
+            is_onsite       BOOLEAN     NOT NULL,
             is_remote       BOOLEAN     NOT NULL,
             salary          REAL        NOT NULL,
             clearance       BOOLEAN     NOT NULL,
