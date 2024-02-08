@@ -1,3 +1,4 @@
+import json
 import sys
 from pathlib import Path
 
@@ -9,12 +10,11 @@ from guidance import models
 
 from config import paths
 from db import init_db, update_db_duties, update_db_skills
-from extract import extract
+from extract import extract_llm, extract_regex
 from parsers.clearance_parser import ClearanceParser
 from parsers.duty_parser import DutyParser
 from parsers.location_parser import HybridParser, RemoteParser
 from parsers.salary_parser import SalaryParser
-from parsers.skill_parser import SkillParser
 
 with open(paths.CONFIG_DIR / "config.toml", "rb") as file:
     config = tomli.load(file)
@@ -33,7 +33,7 @@ llm = models.LlamaCpp(
 )
 
 # Label skills
-skills = db.execute("SELECT id, name FROM skills").fetchall()
+skills = db.execute("SELECT id, name, patts FROM skills").fetchall()
 for skill in skills:
     missing = db.execute(
         """
@@ -49,10 +49,8 @@ for skill in skills:
 
     for post in missing:
         print(f"Checking for [{skill['name']}] in [{post['title']}]")
-        try:
-            label = int(extract(llm, post["text"], SkillParser(skill["name"])))
-        except:
-            continue
+        patts = json.loads(skill["patts"])
+        label = int(extract_regex(post["text"], patts))
 
         db.execute(
             """
@@ -82,10 +80,7 @@ for dt in duties:
 
     for post in missing:
         print(f"Checking for [{dt['name']}] in [{post['title']}]")
-        try:
-            label = int(extract(llm, post["text"], DutyParser(dt["prompt"])))
-        except:
-            continue
+        label = int(extract_llm(llm, post["text"], DutyParser(dt["prompt"])))
         db.execute(
             """
             INSERT INTO indeed_duty_labels 
@@ -108,13 +103,10 @@ missing = db.execute(
 ).fetchall()
 
 for post in missing:
-    try:
-        salary = extract(llm, post["text"], SalaryParser())
-        clearance = extract(llm, post["text"], ClearanceParser())
-        is_hybrid = extract(llm, post["text"], HybridParser())
-        is_remote = extract(llm, post["text"], RemoteParser())
-    except:
-        continue
+    salary = extract_llm(llm, post["text"], SalaryParser())
+    clearance = extract_llm(llm, post["text"], ClearanceParser())
+    is_hybrid = extract_llm(llm, post["text"], HybridParser())
+    is_remote = extract_llm(llm, post["text"], RemoteParser())
 
     print(f"Checking for misc labels in [{post['title']}]")
     db.execute(

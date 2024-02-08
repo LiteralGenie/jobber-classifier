@@ -17,7 +17,8 @@ def init_db(fp: str) -> sqlite3.Connection:
         """
         CREATE TABLE IF NOT EXISTS skills (
             id      INTEGER     PRIMARY KEY,
-            name    TEXT        NOT NULL
+            name    TEXT        NOT NULL,
+            patts   JSON        NOT NULL
         )
         """
     )

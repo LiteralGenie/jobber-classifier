@@ -1,3 +1,4 @@
+import re
 from typing import TypedDict, TypeVar
 
 from guidance import models
@@ -14,7 +15,7 @@ class JobData(TypedDict):
     clearance: bool
 
 
-def extract(llm: models.Model, description: str, parser: Parser[T]) -> T:
+def extract_llm(llm: models.Model, description: str, parser: Parser[T]) -> T:
     prompt = "A job description is listed below. Answer the question that follows it."
     prompt += "\n\n" + f"Job Description:\n{description}"
     prompt += "\n\n" + parser.create_prompt()
@@ -24,17 +25,10 @@ def extract(llm: models.Model, description: str, parser: Parser[T]) -> T:
     return answer
 
 
-# def extract(
-#     llm: models.Model,
-#     description: str,
-#     skills: list[str],
-#     duties: list[str],
-# ) -> JobData:
-#     get = lambda parser: _extract(llm, description, parser)
-
-#     return JobData(
-#         skills={sk: get(SkillParser(sk)) for sk in skills},  # type: ignore
-#         duties={d: get(DutyParser(d)) for d in duties},  # type: ignore
-#         salary=get(SalaryParser()),
-#         clearance=get(ClearanceParser()),
-#     )
+def extract_regex(description: str, patts: list[str]) -> bool:
+    for p in patts:
+        m = re.search(p, description)
+        if m:
+            return True
+    else:
+        return False
