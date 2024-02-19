@@ -203,9 +203,10 @@ for post in (pbar := tqdm(missing)):
                 )
             )
 
+        # Need OR IGNORE bc normalization step in parser can technically cause dupes
         db.executemany(
             """
-            INSERT INTO indeed_location_labels
+            INSERT OR IGNORE INTO indeed_location_labels
             ( id_post,  id_location) VALUES
             (:id_post, :id_location)
             """,

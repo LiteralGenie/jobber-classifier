@@ -27,7 +27,8 @@ COUNTRY, STATE_OR_REGION, CITY
 
 Each location should be on a different line.
 Use only unabbreviated names.
-Do not include any extra punctuation like periods.
+Do not include any trailing punctuation like periods.
+Do not include any extra commentary or clarifications.
 If the region or city is not specified, write null.
 If no locations are listed, write '{NULL_LOCATION}'.
 """.strip()
@@ -47,7 +48,7 @@ If no locations are listed, write '{NULL_LOCATION}'.
 
         try:
             locs: list[LocationAnswer] = []
-            lines = answer.splitlines()
+            lines = [ln for ln in answer.splitlines() if ln.strip()]
 
             for ln in lines:
                 split = ln.split(",")
@@ -57,9 +58,9 @@ If no locations are listed, write '{NULL_LOCATION}'.
                 [country, state, city] = split
                 locs.append(
                     LocationAnswer(
-                        country=country.strip(),
-                        state=state.strip(),
-                        city=city.strip(),
+                        country=self._clean(country),
+                        state=self._clean(state),
+                        city=self._clean(city),
                     )
                 )
 
@@ -67,3 +68,11 @@ If no locations are listed, write '{NULL_LOCATION}'.
         except:
             traceback.print_exc()
             return []
+
+    def _clean(self, text: str) -> str:
+        text = text.strip()
+
+        if text.endswith("."):
+            text = text[:-1]
+
+        return text
