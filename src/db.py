@@ -35,6 +35,36 @@ def init_db(fp: str) -> sqlite3.Connection:
 
     db.execute(
         """
+        CREATE TABLE IF NOT EXISTS locations (
+            id          INTEGER     PRIMARY KEY,
+
+            country     TEXT,
+            state       TEXT,
+            city        TEXT,
+
+            UNIQUE (country, state, city) ON CONFLICT IGNORE
+        )
+        """
+    )
+
+    db.execute(
+        """
+        CREATE TABLE IF NOT EXISTS indeed_label_statuses (
+            id_post         TEXT        NOT NULL,
+
+            has_skills      BOOLEAN     NOT NULL,
+            has_duties      BOOLEAN     NOT NULL,
+            has_misc        BOOLEAN     NOT NULL,
+            has_locations   BOOLEAN     NOT NULL,
+
+            PRIMARY KEY (id_post),
+            FOREIGN KEY (id_post) REFERENCES indeed_posts(id)
+        )
+        """
+    )
+
+    db.execute(
+        """
         CREATE TABLE IF NOT EXISTS indeed_skill_labels (
             id_skill    INTEGER     NOT NULL,
             id_post     TEXT        NOT NULL,
@@ -74,6 +104,19 @@ def init_db(fp: str) -> sqlite3.Connection:
 
             PRIMARY KEY (id_post),
             FOREIGN KEY (id_post) REFERENCES indeed_posts(id)
+        )
+        """
+    )
+
+    db.execute(
+        """
+        CREATE TABLE IF NOT EXISTS indeed_location_labels (
+            id_post         TEXT        NOT NULL,
+            id_location     INTEGER     NOT NULL,
+
+            PRIMARY KEY (id_post, id_location),
+            FOREIGN KEY (id_post) REFERENCES indeed_posts(id),
+            FOREIGN KEY (id_location) REFERENCES locations(id)
         )
         """
     )
