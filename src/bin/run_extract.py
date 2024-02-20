@@ -185,13 +185,17 @@ for post in (pbar := tqdm(missing)):
 
         rows = []
         for loc in locations:
-            loc = db.execute(
-                """
+            check = lambda key, val: (
+                f"{key} = :{key}" if val is not None else f"{key} IS NULL"
+            )
+
+            r = db.execute(
+                f"""
                 SELECT id FROM locations
                 WHERE
-                    country = :country
-                    AND state = :state
-                    AND city = :city
+                    {check('country', loc['country'])}
+                    AND {check('state', loc['state'])}
+                    AND {check('city', loc['city'])}
                 """,
                 loc,
             ).fetchone()
@@ -199,7 +203,7 @@ for post in (pbar := tqdm(missing)):
             rows.append(
                 dict(
                     id_post=post["id"],
-                    id_location=loc["id"],
+                    id_location=r["id"],
                 )
             )
 

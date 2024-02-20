@@ -69,10 +69,13 @@ If no locations are listed, write '{NULL_LOCATION}'.
             traceback.print_exc()
             return []
 
-    def _clean(self, text: str) -> str:
+    def _clean(self, text: str) -> str | None:
         text = text.strip()
 
         if text.endswith("."):
             text = text[:-1]
+
+        if text == "null":
+            return None
 
         return text
