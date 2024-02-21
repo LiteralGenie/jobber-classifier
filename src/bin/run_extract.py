@@ -18,6 +18,7 @@ from parsers.duty_parser import DutyParser
 from parsers.location_parser import LocationParser
 from parsers.location_type_parser import HybridParser, OnsiteParser, RemoteParser
 from parsers.salary_parser import SalaryParser
+from parsers.yoe_parser import YoeParser
 
 with open(paths.CONFIG_DIR / "config.toml", "rb") as file:
     config = tomli.load(file)
@@ -51,7 +52,8 @@ missing = db.execute(
         status.has_skills,
         status.has_duties,
         status.has_misc,
-        status.has_locations
+        status.has_locations,
+        status.has_yoe
     FROM indeed_posts post
     LEFT JOIN indeed_label_statuses status
         ON post.id = status.id_post
@@ -60,6 +62,7 @@ missing = db.execute(
         OR COALESCE(status.has_duties, 0) = 0
         OR COALESCE(status.has_misc, 0) = 0
         OR COALESCE(status.has_locations, 0) = 0
+        OR COALESCE(status.has_yoe, 0) = 0
     )
     """
 ).fetchall()
@@ -220,6 +223,28 @@ for post in (pbar := tqdm(missing)):
             """
             UPDATE indeed_label_statuses
             SET has_locations = ?
+            WHERE id_post = ?
+            """,
+            [1, post["id"]],
+        )
+        db.commit()
+
+    # Label YoE
+    if not post["has_yoe"]:
+        yoe = extract_llm(llm, post["text"], YoeParser())
+
+        db.execute(
+            """
+            INSERT INTO indeed_yoe_labels 
+            (id_post, yoe) VALUES
+            (?, ?)
+            """,
+            [post["id"], yoe],
+        )
+        db.execute(
+            """
+            UPDATE indeed_label_statuses
+            SET has_yoe = ?
             WHERE id_post = ?
             """,
             [1, post["id"]],
