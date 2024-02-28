@@ -13,4 +13,7 @@ class SalaryParser(Parser[int]):
         return prompt
 
     def extract_answer(self, output: Model) -> int:
-        return int(output["salary"])  # type: ignore
+        val = int(output["salary"])  # type: ignore
+        if val > 10_000_000:
+            val = 0
+        return val

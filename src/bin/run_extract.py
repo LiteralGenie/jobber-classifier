@@ -33,7 +33,7 @@ print("Loading model")
 llm = models.LlamaCpp(
     model=config["model_file"],
     n_gpu_layers=9999 if config["use_gpu"] else -1,
-    n_ctx=4096,
+    n_ctx=8192,
     echo=False,
 )
 
@@ -64,6 +64,7 @@ missing = db.execute(
         OR COALESCE(status.has_locations, 0) = 0
         OR COALESCE(status.has_yoe, 0) = 0
     )
+    ORDER BY post.rowid ASC
     """
 ).fetchall()
 
