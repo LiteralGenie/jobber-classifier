@@ -11,7 +11,7 @@ from guidance import models
 from tqdm import tqdm
 
 from config import paths
-from db import init_db, update_db_duties, update_db_skills
+from db import init_db
 from extract import extract_llm, extract_regex
 from parsers.clearance_parser import ClearanceParser
 from parsers.duty_parser import DutyParser
@@ -25,8 +25,6 @@ with open(paths.CONFIG_DIR / "config.toml", "rb") as file:
 
 # Prep db
 db = init_db(config["db_file"])
-update_db_skills(db, config["skills"])
-update_db_duties(db, config["duties"])
 
 # Load model
 print("Loading model")
@@ -85,8 +83,17 @@ for post in (pbar := tqdm(missing)):
 
     # Label skills
     if not post["has_skills"]:
+        current = db.execute(
+            "SELECT id_skill FROM indeed_skill_labels WHERE id_post = ?",
+            [post["id"]],
+        ).fetchall()
+
         rows = []
         for skill in skills:
+            already_exists = any(old["id_skill"] == skill["id"] for old in current)
+            if already_exists:
+                continue
+
             patts = json.loads(skill["patts"])
             label = int(extract_regex(post["text"], patts))
             rows.append(
@@ -117,8 +124,17 @@ for post in (pbar := tqdm(missing)):
 
     # Label duties
     if not post["has_duties"]:
+        current = db.execute(
+            "SELECT id_duty FROM indeed_duty_labels WHERE id_post = ?",
+            [post["id"]],
+        ).fetchall()
+
         rows = []
         for dt in duties:
+            already_exists = any(old["id_duty"] == dt["id"] for old in current)
+            if already_exists:
+                continue
+
             label = int(extract_llm(llm, post["text"], DutyParser(dt["prompt"])))
             rows.append(
                 dict(

@@ -1,4 +1,6 @@
 venv/
 
+*.bak
+*.sqlite
 *.pyc
 src/config/config.toml
