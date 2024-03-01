@@ -79,7 +79,7 @@ def init_db(fp: str) -> sqlite3.Connection:
         """
         CREATE TABLE IF NOT EXISTS skill_labels (
             id_skill    INTEGER     NOT NULL,
-            id_post     TEXT        NOT NULL,
+            id_post     INTEGER     NOT NULL,
 
             label       BOOLEAN     NOT NULL,
 
@@ -93,7 +93,7 @@ def init_db(fp: str) -> sqlite3.Connection:
         """
         CREATE TABLE IF NOT EXISTS duty_labels (
             id_duty     INTEGER     NOT NULL,
-            id_post     TEXT        NOT NULL,
+            id_post     INTEGER     NOT NULL,
 
             label       BOOLEAN     NOT NULL,
 
@@ -106,7 +106,7 @@ def init_db(fp: str) -> sqlite3.Connection:
     db.execute(
         """
         CREATE TABLE IF NOT EXISTS misc_labels (
-            id_post         TEXT        NOT NULL,
+            id_post         INTEGER     NOT NULL,
 
             is_hybrid       BOOLEAN     NOT NULL,
             is_onsite       BOOLEAN     NOT NULL,
@@ -123,7 +123,7 @@ def init_db(fp: str) -> sqlite3.Connection:
     db.execute(
         """
         CREATE TABLE IF NOT EXISTS location_labels (
-            id_post         TEXT        NOT NULL,
+            id_post         INTEGER     NOT NULL,
             id_location     INTEGER     NOT NULL,
 
             PRIMARY KEY (id_post, id_location),
@@ -136,7 +136,7 @@ def init_db(fp: str) -> sqlite3.Connection:
     db.execute(
         """
         CREATE TABLE IF NOT EXISTS yoe_labels (
-            id_post         TEXT        NOT NULL,
+            id_post         INTEGER     NOT NULL,
             yoe             INTEGER,
 
             PRIMARY KEY (id_post),
