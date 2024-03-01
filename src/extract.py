@@ -27,7 +27,7 @@ def extract_llm(llm: models.Model, description: str, parser: Parser[T]) -> T:
 
 def extract_regex(description: str, patts: list[str]) -> bool:
     for p in patts:
-        m = re.search(p, description)
+        m = re.search(p, description, flags=re.IGNORECASE)
         if m:
             return True
     else:

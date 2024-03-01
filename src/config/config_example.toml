@@ -8,11 +8,14 @@ model_file = '/path/to/mistral-7b-instruct-v0.2.Q8_0.gguf'
 use_gpu = false
 
 
-# Skills in a job posting are detected using regex patterns
+# Skills in a job posting are detected using case-insensitive regex patterns
 [[skills]]
 name = 'Python'
-patts = ['[^\\s]python[^\\s]']
+patts = ['[^\w]python[^\w]']
 
+[[skills]]
+name = 'C++'
+patts = ['[^\w]c\+\+[^\w]']
 
 # Duties in a job posting are detected using a yes-or-no question fed to an LLM
 [[duties]]
