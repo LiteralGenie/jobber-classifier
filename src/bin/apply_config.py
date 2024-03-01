@@ -107,28 +107,28 @@ The database is located at {Path(config['db_file']).absolute()}
             "INSERT INTO skills (name, patts) VALUES (?, ?)",
             [[sk["name"], json.dumps(sk["patts"])] for sk in skill_changes["toCreate"]],
         )
-        db.execute("UPDATE indeed_label_statuses SET has_skills = 0")
+        db.execute("UPDATE label_statuses SET has_skills = 0")
 
     if skill_changes["toDelete"]:
         db.executemany(
             "DELETE FROM skills WHERE name = ?",
             [sk["name"] for sk in skill_changes["toDelete"]],
         )
-        db.execute("UPDATE indeed_label_statuses SET has_skills = 0")
+        db.execute("UPDATE label_statuses SET has_skills = 0")
 
     if duty_changes["toCreate"]:
         db.executemany(
             "INSERT INTO duties (name, prompt) VALUES (?, ?)",
             [[dt["name"], dt["prompt"]] for dt in duty_changes["toCreate"]],
         )
-        db.execute("UPDATE indeed_label_statuses SET has_duties = 0")
+        db.execute("UPDATE label_statuses SET has_duties = 0")
 
     if duty_changes["toDelete"]:
         db.executemany(
             "DELETE FROM duties WHERE name = ?",
             [[dt["name"]] for dt in duty_changes["toDelete"]],
         )
-        db.execute("UPDATE indeed_label_statuses SET has_duties = 0")
+        db.execute("UPDATE label_statuses SET has_duties = 0")
 
     # Save and display db content
     db.commit()

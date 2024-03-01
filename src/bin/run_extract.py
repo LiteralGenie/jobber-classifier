@@ -52,8 +52,8 @@ missing = db.execute(
         status.has_misc,
         status.has_locations,
         status.has_yoe
-    FROM indeed_posts post
-    LEFT JOIN indeed_label_statuses status
+    FROM posts post
+    LEFT JOIN label_statuses status
         ON post.id = status.id_post
     WHERE (
         COALESCE(status.has_skills, 0) = 0
@@ -73,18 +73,18 @@ for post in (pbar := tqdm(missing)):
     if post["id_status"] is None:
         db.execute(
             """
-            INSERT INTO indeed_label_statuses
-            (id_post, has_skills, has_duties, has_misc, has_locations) VALUES
-            (?, ?, ?, ?, ?)
+            INSERT INTO label_statuses
+            (id_post, has_skills, has_duties, has_misc, has_locations, has_yoe) VALUES
+            (?, ?, ?, ?, ?, ?)
             """,
-            [post["id"], 0, 0, 0, 0],
+            [post["id"], 0, 0, 0, 0, 0],
         )
         db.commit()
 
     # Label skills
     if not post["has_skills"]:
         current = db.execute(
-            "SELECT id_skill FROM indeed_skill_labels WHERE id_post = ?",
+            "SELECT id_skill FROM skill_labels WHERE id_post = ?",
             [post["id"]],
         ).fetchall()
 
@@ -106,7 +106,7 @@ for post in (pbar := tqdm(missing)):
 
         db.executemany(
             """
-            INSERT INTO indeed_skill_labels 
+            INSERT INTO skill_labels 
             ( id_post,  id_skill,  label) VALUES
             (:id_post, :id_skill, :label)
             """,
@@ -114,7 +114,7 @@ for post in (pbar := tqdm(missing)):
         )
         db.execute(
             """
-            UPDATE indeed_label_statuses
+            UPDATE label_statuses
             SET has_skills = ?
             WHERE id_post = ?
             """,
@@ -125,7 +125,7 @@ for post in (pbar := tqdm(missing)):
     # Label duties
     if not post["has_duties"]:
         current = db.execute(
-            "SELECT id_duty FROM indeed_duty_labels WHERE id_post = ?",
+            "SELECT id_duty FROM duty_labels WHERE id_post = ?",
             [post["id"]],
         ).fetchall()
 
@@ -146,7 +146,7 @@ for post in (pbar := tqdm(missing)):
 
         db.executemany(
             """
-            INSERT INTO indeed_duty_labels 
+            INSERT INTO duty_labels 
             ( id_post,  id_duty,  label) VALUES
             (:id_post, :id_duty, :label)
             """,
@@ -154,7 +154,7 @@ for post in (pbar := tqdm(missing)):
         )
         db.execute(
             """
-            UPDATE indeed_label_statuses
+            UPDATE label_statuses
             SET has_duties = ?
             WHERE id_post = ?
             """,
@@ -173,7 +173,7 @@ for post in (pbar := tqdm(missing)):
 
         db.execute(
             """
-            INSERT INTO indeed_misc_labels 
+            INSERT INTO misc_labels 
             (id_post, salary, clearance, is_hybrid, is_onsite, is_remote) VALUES
             (?, ?, ?, ?, ?, ?)
             """,
@@ -181,7 +181,7 @@ for post in (pbar := tqdm(missing)):
         )
         db.execute(
             """
-            UPDATE indeed_label_statuses
+            UPDATE label_statuses
             SET has_misc = ?
             WHERE id_post = ?
             """,
@@ -230,7 +230,7 @@ for post in (pbar := tqdm(missing)):
         # Need OR IGNORE bc normalization step in parser can technically cause dupes
         db.executemany(
             """
-            INSERT OR IGNORE INTO indeed_location_labels
+            INSERT OR IGNORE INTO location_labels
             ( id_post,  id_location) VALUES
             (:id_post, :id_location)
             """,
@@ -238,7 +238,7 @@ for post in (pbar := tqdm(missing)):
         )
         db.execute(
             """
-            UPDATE indeed_label_statuses
+            UPDATE label_statuses
             SET has_locations = ?
             WHERE id_post = ?
             """,
@@ -252,7 +252,7 @@ for post in (pbar := tqdm(missing)):
 
         db.execute(
             """
-            INSERT INTO indeed_yoe_labels 
+            INSERT INTO yoe_labels 
             (id_post, yoe) VALUES
             (?, ?)
             """,
@@ -260,7 +260,7 @@ for post in (pbar := tqdm(missing)):
         )
         db.execute(
             """
-            UPDATE indeed_label_statuses
+            UPDATE label_statuses
             SET has_yoe = ?
             WHERE id_post = ?
             """,
