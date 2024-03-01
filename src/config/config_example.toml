@@ -1,7 +1,8 @@
 # the containing folder (/path/to/) should already exist
-# the same db file should be configured for the other repos (jobber-classifier and jobber-site)
+# the same db file should be configured for the jobber-site repo
 db_file = '/path/to/db.sqlite'
 
+# https://huggingface.co/TheBloke/Mistral-7B-Instruct-v0.2-GGUF
 model_file = '/path/to/mistral-7b-instruct-v0.2.Q8_0.gguf'
 
 # llama-cpp-python needs to be built from scratch for gpu-support to work (see requirements.txt)
