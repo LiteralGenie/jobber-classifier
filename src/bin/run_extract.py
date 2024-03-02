@@ -1,14 +1,16 @@
 import sys
 from pathlib import Path
 
+import tqdm
+
 # Add src/ to PATH
 sys.path.append(str(Path(__file__).parent.parent))
 
 import json
+import multiprocessing
 
 import tomli
 from guidance import models
-from tqdm import tqdm
 
 from config import paths
 from db import init_db
@@ -23,52 +25,25 @@ from parsers.yoe_parser import YoeParser
 with open(paths.CONFIG_DIR / "config.toml", "rb") as file:
     config = tomli.load(file)
 
-# Prep db
-db = init_db(config["db_file"])
 
-# Load model
-print("Loading model")
-llm = models.LlamaCpp(
-    model=config["model_file"],
-    n_gpu_layers=9999 if config["use_gpu"] else -1,
-    n_ctx=8192,
-    echo=False,
-)
+def init_worker():
+    global llm, db
 
-# Read globals
-skills = db.execute("SELECT id, name, patts FROM skills").fetchall()
-duties = db.execute("SELECT id, name, prompt FROM duties").fetchall()
+    db = init_db(config["db_file"])
 
-# Filter posts with missing labels
-missing = db.execute(
-    """
-    SELECT
-        post.id,
-        post.title,
-        post.text,
-        status.id_post AS id_status,
-        status.has_skills,
-        status.has_duties,
-        status.has_misc,
-        status.has_locations,
-        status.has_yoe
-    FROM posts post
-    LEFT JOIN label_statuses status
-        ON post.id = status.id_post
-    WHERE (
-        COALESCE(status.has_skills, 0) = 0
-        OR COALESCE(status.has_duties, 0) = 0
-        OR COALESCE(status.has_misc, 0) = 0
-        OR COALESCE(status.has_locations, 0) = 0
-        OR COALESCE(status.has_yoe, 0) = 0
+    # Load model
+    print("Loading model")
+    llm = models.LlamaCpp(
+        model=config["model_file"],
+        n_gpu_layers=9999 if config["use_gpu"] else -1,
+        n_ctx=8192,
+        echo=False,
     )
-    ORDER BY post.rowid ASC
-    """
-).fetchall()
 
-for post in (pbar := tqdm(missing)):
-    pbar.set_description(f"Labeling [{post['title']}]")
-    pbar.refresh()
+
+def label(post: dict):
+    skills = db.execute("SELECT id, name, patts FROM skills").fetchall()
+    duties = db.execute("SELECT id, name, prompt FROM duties").fetchall()
 
     if post["id_status"] is None:
         db.execute(
@@ -267,3 +242,40 @@ for post in (pbar := tqdm(missing)):
             [1, post["id"]],
         )
         db.commit()
+
+
+if __name__ == "__main__":
+    db = init_db(config["db_file"])
+
+    # Filter posts with missing labels
+    missing = db.execute(
+        """
+        SELECT
+            post.id,
+            post.title,
+            post.text,
+            status.id_post AS id_status,
+            status.has_skills,
+            status.has_duties,
+            status.has_misc,
+            status.has_locations,
+            status.has_yoe
+        FROM posts post
+        LEFT JOIN label_statuses status
+            ON post.id = status.id_post
+        WHERE (
+            COALESCE(status.has_skills, 0) = 0
+            OR COALESCE(status.has_duties, 0) = 0
+            OR COALESCE(status.has_misc, 0) = 0
+            OR COALESCE(status.has_locations, 0) = 0
+            OR COALESCE(status.has_yoe, 0) = 0
+        )
+        ORDER BY post.rowid ASC
+        """
+    ).fetchall()
+    missing = [dict(r) for r in missing]
+
+    with multiprocessing.Pool(config["num_workers"], initializer=init_worker) as pool:
+        with tqdm.tqdm(total=len(missing)) as pbar:
+            for _ in pool.imap_unordered(label, missing):
+                pbar.update()

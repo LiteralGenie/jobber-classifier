@@ -8,6 +8,8 @@ model_file = '/path/to/mistral-7b-instruct-v0.2.Q8_0.gguf'
 # llama-cpp-python needs to be built from scratch for gpu-support to work (see requirements.txt)
 use_gpu = false
 
+# mistral 7b uses ~6GB per worker
+num_workers = 1
 
 # Skills in a job posting are detected using case-insensitive regex patterns
 [[skills]]
