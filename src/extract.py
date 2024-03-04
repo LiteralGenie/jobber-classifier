@@ -7,14 +7,6 @@ from parsers.parser import Parser
 
 T = TypeVar("T")
 
-
-class JobData(TypedDict):
-    skills: list[str]
-    duties: list[str]
-    salary: int
-    clearance: bool
-
-
 def extract_llm(llm: models.Model, description: str, parser: Parser[T]) -> T:
     prompt = "A job description is listed below. Answer the question that follows it."
     prompt += "\n\n" + f"Job Description:\n{description}"
