@@ -61,7 +61,7 @@ def init_db(fp: str) -> sqlite3.Connection:
     db.execute(
         """
         CREATE TABLE IF NOT EXISTS label_statuses (
-            id_post         TEXT        NOT NULL,
+            id_post         INTEGER     NOT NULL,
 
             has_skills      BOOLEAN     NOT NULL,
             has_duties      BOOLEAN     NOT NULL,
