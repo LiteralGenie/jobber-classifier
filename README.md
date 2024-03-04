@@ -37,7 +37,7 @@ python ./src/bin/apply_config.py
 Populate the `posts` table [in the database](https://github.com/LiteralGenie/jobber-classifier/blob/master/src/db.py#L10) with job data (left as an exercise for the reader).
 Or alternatively download a copy of the current Jobber database.
 ```
-curl https://jobber.gisadan.dev/api/export/sqlite
+curl https://jobber.velchees.dev/api/export/sqlite
 mv db.sqlite /path/in/config/db.sqlite
 ```
 
